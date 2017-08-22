@@ -98,26 +98,22 @@ module Bosh::Director
       it 'returns the number of cloud configs specified by ?limit' do
         authorize('admin', 'admin')
 
-        Models::Config.new(
-          type: 'cloud',
-          name: 'default',
+        Models::Config.make(
+          :cloud,
           content: 'config_from_time_immortal',
           created_at: Time.now - 3,
-        ).save
-        Models::Config.new(
-          type: 'cloud',
-          name: 'default',
+        )
+        Models::Config.make(
+          :cloud,
           content: 'config_from_last_year',
           created_at: Time.now - 2,
-        ).save
+        )
         newer_cloud_config_content = "---\nsuper_shiny: new_config"
-        Models::Config.new(
-          type: 'cloud',
-          name: 'default',
+        Models::Config.make(
+          :cloud,
           content: newer_cloud_config_content,
           created_at: Time.now - 1,
-        ).save
-
+        )
 
         get '/?limit=2'
 

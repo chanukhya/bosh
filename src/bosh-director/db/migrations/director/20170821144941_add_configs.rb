@@ -20,24 +20,23 @@ Sequel.migration do
     end
 
     alter_table :deployments do
-      add_foreign_key :config_id, :configs
+      drop_foreign_key [:cloud_config_id]
+      rename_column :cloud_config_id, :cloud_config_old_id
+      add_foreign_key :cloud_config_id, :configs
     end
 
     self[:cloud_configs].each do |cloud_config|
-      new_config = self[:configs].insert({
+      config_id = self[:configs].insert({
         type: 'cloud',
         name: 'default',
         content: cloud_config[:properties],
         created_at: cloud_config[:created_at]
       })
 
-      self[:deployments].where(cloud_config_id: cloud_config[:id]).update(
-        config_id: new_config
+      self[:deployments].where(cloud_config_id: [:id]).update(
+        cloud_config_id: config_id
       )
     end
 
-    alter_table :deployments do
-      drop_foreign_key :cloud_config_id
-    end
   end
 end

@@ -28,25 +28,19 @@ module Bosh::Director
           name: 'default',
           content: 'old content',
           created_at: some_time
-         })
+        })
       end
 
       it 'changes the foreign key to config_id' do
         DBSpecHelper.migrate(migration_file)
 
         expect(db.foreign_key_list(:deployments).size).to eq(1)
-        expect(db.foreign_key_list(:deployments).first).to eq({
-          columns: [:config_id],
-          table: :configs,
-          key: nil,
-          on_update: :no_action,
-          on_delete: :no_action
-         })
+        expect(db.foreign_key_list(:deployments).first).to include(
+          columns: [:cloud_config_id],
+          table: :configs
+        )
       end
-    end
 
-    # alter constraint on deployments (add column)
-    # update deployment links...?
-    # remove cc table
+    end
   end
 end
